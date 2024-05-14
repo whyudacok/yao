@@ -72,6 +72,72 @@ app.get("/genres/:nama/page/:hal", (req, res) => {
   });
 });
 
+app.get("/anifo/:endpoint", (req, res) => {
+  const url = req.params.endpoint;
+
+  getDataAnimee(url).then((result) => {
+    res.send(result);
+  });
+});
+
+async function getDataAnimee(endpoint) {
+  let { data } = await axios.get(`https://nontonanimeid.cyou/anime/${endpoint}/`);
+
+  const $ = cheerio.load(data);
+
+  const title = $(".entry-title.cs").text();
+  const image = $(".kotakseries .poster img").attr("src");
+  const status = $(".kotakseries .statusseries").text();
+  const duration = $(".kotakseries .durasiseries").text();
+  const rated = $(".kotakseries .ratedseries").text();
+  const premiereDate = $(".kotakseries .dateseries a").text();
+  const lastEpisode = $(".kotakseries .latestepisode").first().text().trim();
+  const firstEpisode = $(".kotakseries .latestepisode").last().text().trim();
+  const popularity = $(".bottomtitle span.infoseries b:contains('Popularity:')").text();
+  const members = $(".bottomtitle span.infoseries b:contains('Members:')").text();
+  const studios = $(".bottomtitle span.infoseries b:contains('Studios:')").text();
+  const aired = $(".bottomtitle span.infoseries b:contains('Aired:')").text();
+  const englishTitle = $(".bottomtitle span.infoseries b:contains('English:')").text();
+  const synonyms = $(".bottomtitle span.infoseries b:contains('Synonyms:')").text();
+  const synopsis = $(".entry-content.seriesdesc p").text();
+
+  const episodes = [];
+  $(".episodelist .misha_posts_wrap2 li").each((index, element) => {
+    const episodeTitle = $(element).find("a").text();
+    const episodeDate = $(element).find(".t3").text();
+    episodes.push({ title: episodeTitle, date: episodeDate });
+  });
+
+  let objek = {
+    success: true,
+    author: "Ah Dev",
+    sumber: "https://nontonanimeid.cyou/",
+    pesan:
+      "Uh",
+    data: {
+      title,
+      image,
+      status,
+      duration,
+      rated,
+      premiereDate,
+      lastEpisode,
+      firstEpisode,
+      popularity,
+      members,
+      studios,
+      aired,
+      englishTitle,
+      synonyms,
+      synopsis,
+      episodes
+    },
+  };
+
+  return objek;
+}
+
+
 async function getDataAnime() {
   let { data } = await axios.get("https://otakudesu.ltd");
 
