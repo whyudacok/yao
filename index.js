@@ -25,13 +25,6 @@ app.get("/", (req, res) => {
   res.send(keluaran);
 });
 
-app.get("/nup", (req, res) => {
-  res.type("json");
-
-  getDataAnimenup().then((result) => {
-    res.send(result);
-  });
-});
 
 app.get("/terbaru", (req, res) => {
   res.type("json");
@@ -144,26 +137,7 @@ async function getDataAnimee(endpoint) {
 
   return objek;
 }
-async function getDataAnimenup() {
-  let { data } = await axios.get("https://nontonanimeid.cyou");
 
-  const $ = cheerio.load(data);
-
-  let arr = [];
-    $('article.animeseries').each((index, element) => {
-      const title = $(element).find('.title span').text();
-      const episodeNumber = $(element).find('.types.episodes').text();
-      const imgSrc = $(element).find('img').attr('src');
-      const href = $(element).find('a').attr('href');
-
-      arr.push({
-        id: index + 1,
-        judul: title,
-        eps: episodeNumber,
-        img: imgSrc,
-        endpoint: href,
-      });
-    });
     
 
 async function getDataAnime() {
